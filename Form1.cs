@@ -1,7 +1,6 @@
-using Microsoft.Data.SqlClient;
-using System.Drawing;
+using System.Windows.Forms;
 
-namespace lab9b
+namespace lab10
 {
     public partial class Form1 : Form
     {
@@ -15,45 +14,62 @@ namespace lab9b
 
         }
 
-        private void btnAddStudent_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(textBox1.Text) ||
-                string.IsNullOrWhiteSpace(textBox2.Text) ||
-                string.IsNullOrWhiteSpace(textBox3.Text) ||
-                string.IsNullOrWhiteSpace(textBox4.Text) ||
-                string.IsNullOrWhiteSpace(comboBox1.Text) ||
-                string.IsNullOrWhiteSpace(textBox5.Text) ||
-                string.IsNullOrWhiteSpace(textBox6.Text) ||
-                string.IsNullOrWhiteSpace(textBox7.Text) ||
-                string.IsNullOrWhiteSpace(textBox8.Text))
+            Student student = new Student
             {
-                MessageBox.Show("Please enter all details!");
-                return;
-            }
-            DateTime selectedDate = dateTimePicker1.Value;
-            DateTime today = DateTime.Today;
+                RollNo = Convert.ToInt32(textBox1.Text),
+                Name = textBox2.Text
+            };
+            StudentContext db = new StudentContext();
+            db.Students.Add(student);
+            db.SaveChanges();
 
-            if (selectedDate>today)
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Student student = new Student
             {
-                MessageBox.Show("Date added can't be future date");
-                return;
-            }
-            SqlConnection con = new SqlConnection("Data Source=DESKTOP-HFMTC3I\\SQLEXPRESS;Initial Catalog=library;Integrated Security=True;Trust Server Certificate=True");
-            con.Open();
-            try
+                RollNo = Convert.ToInt32(textBox1.Text),
+                Name = textBox2.Text
+            };
+
+            StudentContext db = new StudentContext();
+            db.Students.Update(student);
+            db.SaveChanges();
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Student student = new Student
             {
-                string query = "INSERT INTO Books (BookID,Title,Author,Publisher,category,ISBN,Quantity,Price,RackNo,DateAdded) VALUES ('" + textBox1.Text + "','" + textBox2.Text + "','" + textBox3.Text + "','" + textBox4.Text + "','" + comboBox1.Text + "','" + textBox5.Text + "','" + textBox6.Text + "','" + textBox7.Text + "','" + textBox8.Text + "','" + dateTimePicker1.Value + "')";
-                SqlCommand cmd = new SqlCommand(query, con);
-                SqlDataReader reader = cmd.ExecuteReader();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                con.Close();
-            }
+                RollNo = Convert.ToInt32(textBox1.Text),
+                Name = textBox2.Text
+            };
+
+            StudentContext db = new StudentContext();
+            db.Students.Remove(student);
+            db.SaveChanges();
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            StudentContext db = new StudentContext();
+            dataGridView1.DataSource = db.Students.ToList();
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            int rollno = Convert.ToInt32(textBox1.Text);
+            StudentContext db = new StudentContext();
+            var found = db.Students.FirstOrDefault(s => s.RollNo == rollno);
+
+            List<Student> students = new List<Student> { found };
+            dataGridView1.DataSource = students;
 
         }
     }
